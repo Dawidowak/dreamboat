@@ -28,6 +28,7 @@ type BeaconNode interface {
 	Randao(structs.Slot) (string, error)
 	Endpoint() string
 	GetWithdrawals(structs.Slot) (*GetWithdrawalsResponse, error)
+	SubscribeToPayloadAttributesEvents(payloadAttrC chan PayloadAttributesEvent)
 }
 
 type MultiBeaconClient struct {
@@ -207,6 +208,12 @@ func (b *MultiBeaconClient) GetForkSchedule() (spec *GetForkScheduleResponse, er
 	}
 
 	return spec, err
+}
+
+func (b *MultiBeaconClient) SubscribeToPayloadAttributesEvents(slotC chan PayloadAttributesEvent) {
+	for _, instance := range b.Clients {
+		go instance.SubscribeToPayloadAttributesEvents(slotC)
+	}
 }
 
 func (b *MultiBeaconClient) Endpoint() string {

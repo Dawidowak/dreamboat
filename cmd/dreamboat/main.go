@@ -233,6 +233,12 @@ var flags = []cli.Flag{
 		Value:   "",
 		EnvVars: []string{"BLOCK_VALIDATION_ENDPOINT_RPC"},
 	},
+	&cli.BoolFlag{
+		Name:    "beacon-payload-attributes-subscription",
+		Usage:   "instead of polling withdrawals+prevRandao, use SSE event (requires Prysm v4+)",
+		Value:   false,
+		EnvVars: []string{"BEACON_PAYLOAD_ATTRIBUTES_SUBSCRIPTION"},
+	},
 }
 
 const (
@@ -387,8 +393,9 @@ func run() cli.ActionFunc {
 		validatorRelay := validators.NewRegister(logger, domainBuilder, state, verificator, validatorStoreManager)
 		validatorRelay.AttachMetrics(m)
 		b := beacon.NewManager(logger, beacon.Config{
-			BellatrixForkVersion: cfg.BellatrixForkVersion,
-			CapellaForkVersion:   cfg.CapellaForkVersion,
+			BellatrixForkVersion:             cfg.BellatrixForkVersion,
+			CapellaForkVersion:               cfg.CapellaForkVersion,
+			RunPayloadAttributesSubscription: c.Bool("beacon-payload-attributes-subscription"),
 		})
 
 		auctioneer := auction.NewAuctioneer()
