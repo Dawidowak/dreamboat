@@ -213,7 +213,6 @@ func (b *beaconClient) PublishBlock(block structs.SignedBeaconBlock) error {
 func (b *beaconClient) SubscribeToPayloadAttributesEvents(payloadAttributesC chan PayloadAttributesEvent) {
 	eventsURL := fmt.Sprintf("%s/eth/v1/events?topics=payload_attributes", b.beaconEndpoint)
 	log := b.log.WithField("url", eventsURL)
-	log.Info("subscribing to payload_attributes events")
 
 	client := sse.NewClient(eventsURL)
 
@@ -224,6 +223,7 @@ func (b *beaconClient) SubscribeToPayloadAttributesEvents(payloadAttributesC cha
 			if err != nil {
 				log.WithError(err).Error("could not unmarshal payload_attributes event")
 			} else {
+				fmt.Printf("%v\n", data)
 				payloadAttributesC <- data
 			}
 		})
